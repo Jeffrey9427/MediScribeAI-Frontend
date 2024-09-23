@@ -1,4 +1,4 @@
-function Header() {
+function Header( {totalRecordings} ) {
     return (
         <div className="mt-7 flex">
             <div className="grow">
@@ -6,7 +6,7 @@ function Header() {
                 <p className="font-medium text-xl text-quaternary">Collection of your audio recordings</p>
             </div>
             <div className="flex-none mt-5">
-                <p className="font-medium text-xl text-quaternary">0/100 recordings</p>
+                <p className="font-medium text-xl text-quaternary">{totalRecordings}/100 recordings</p>
             </div>
         </div>
     )

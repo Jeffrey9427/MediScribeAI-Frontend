@@ -3,11 +3,13 @@ import Header from "../components/Header";
 import SearchAudio from "../components/SearchAudio";
 
 function RecordingStorage() {
+    const totalRecordings = 1; 
+
     return (
         <div className="bg-white ml-48 h-screen rounded-l-3xl py-16 px-28 text-left" >
             <SearchAudio />
-            <Header />
-            <AudioContent totalRecord={1}/>
+            <Header totalRecordings={totalRecordings}/>
+            <AudioContent totalRecordings={totalRecordings}/>
         </div>
     )
 }
