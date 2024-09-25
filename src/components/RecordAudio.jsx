@@ -1,7 +1,22 @@
 import Microphone from "../assets/microphone.svg";
 import Upload from "../assets/upload.svg";
+import { useRef } from "react";
 
-function RecordAudio() {
+function RecordAudio({onUpload}) {
+    const fileInputRef = useRef(null);
+
+    const handleUploadClick = () => {
+        fileInputRef.current.click();
+    }
+
+    const handleFileChange = (event) => {
+        const file = event.target.files[0];
+
+        if (file) {
+            onUpload(file);
+        }
+    }
+
     return (
         <div className="flex flex-col gap-y-5 mt-10 text-center">
 
@@ -9,8 +24,8 @@ function RecordAudio() {
             <div className="border-2 border-black rounded-3xl p-12 border-dashed">
                 <p className="font-semibold text-[1.75rem]">Start Recording</p>
                 <div className="mt-5">
-                    <button className="border-2 border-primary rounded-full p-6">
-                        <img src={Microphone} alt="microphone icon" className="w-10 h-10"/>
+                    <button className="border-2 border-primary rounded-full p-6 hover:bg-primary group">
+                        <img src={Microphone} alt="microphone icon" className="w-10 h-10 group-hover:filter group-hover:brightness-0 group-hover:invert"/>
                     </button>
                     <p className="mt-4">00:00/01:00</p>
                 </div>
@@ -25,8 +40,15 @@ function RecordAudio() {
 
             {/* Upload Audio Area */}
             <div className="border-2 border-black rounded-3xl p-16 border-dashed">
+                <input
+                    type="file"
+                    accept=".mp3,.wav,.m4a"
+                    ref={fileInputRef}
+                    style={{ display: 'none' }}
+                    onChange={handleFileChange}  // Handles the file change event
+                />
                 <div>
-                    <button className="">
+                    <button className="" onClick={handleUploadClick}>
                         <img src={Upload} alt="upload icon" className="w-12 h-12"/>
                     </button>
                     <p className="mt-1 font-medium text-2xl">Upload an audio file</p>

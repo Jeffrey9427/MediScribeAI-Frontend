@@ -15,6 +15,13 @@ function SpeechRecord() {
         nav("/record-storage");
     };
 
+    const handleAudioUpload = (file) => {
+        console.log("Uploaded file: ", file);
+
+        // check di console
+        // continue with saving audio in s3 bucket
+    }
+
     return (
         <div className="bg-white ml-48 h-screen rounded-l-3xl py-16 px-28 text-left overflow-y-scroll " >
             {/* Top Section */}
@@ -25,7 +32,7 @@ function SpeechRecord() {
             <Header subtitle={subtitle} totalRecordings={totalRecordings}/>
 
             {/* Audio List Section */}
-            <RecordAudio />
+            <RecordAudio onUpload={handleAudioUpload}/>
         </div>
     )
 }
