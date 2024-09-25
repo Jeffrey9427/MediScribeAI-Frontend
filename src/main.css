@@ -2,6 +2,7 @@
 @import 'tailwindcss/components';
 @import 'tailwindcss/utilities';
 @import url('https://fonts.googleapis.com/css2?family=Kumbh+Sans:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@100..900&display=swap');
 html,
 body {
     height: 100%;
@@ -20,9 +21,14 @@ body {
     background-color: var(--color-tertiary);
 }
 
+.lexend {
+    font-family: "Lexend", sans-serif;
+}
+
 :root {
     --color-primary: #086788;
     --color-secondary: #F87060;
     --color-tertiary: #B4EDD2;
     --color-quaternary: #A4A4A4;
+    --color-quinary: #525252;
 }

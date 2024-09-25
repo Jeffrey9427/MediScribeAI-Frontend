@@ -7,7 +7,7 @@ const Waveform = ({ audioUrl, playing, handlePlayPause }) => {
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
 
-    // Format time helper function to format seconds to mm:ss
+    // format time helper function to format seconds to mm:ss
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = Math.floor(seconds % 60);
@@ -15,7 +15,7 @@ const Waveform = ({ audioUrl, playing, handlePlayPause }) => {
     };
 
     useEffect(() => {
-        // Initialize WaveSurfer when the component mounts
+        // initialize WaveSurfer when the component mounts
         wavesurferRef.current = WaveSurfer.create({
             container: waveformRef.current,
             waveColor: '#ddd',
@@ -25,22 +25,22 @@ const Waveform = ({ audioUrl, playing, handlePlayPause }) => {
             responsive: true,
         });
 
-        // Load the audio file into wavesurfer
+        // load the audio file into wavesurfer
         wavesurferRef.current.load(audioUrl);
 
-        // Event listener to update duration once the audio is loaded
+        // event listener to update duration once the audio is loaded
         wavesurferRef.current.on('ready', () => {
             setDuration(wavesurferRef.current.getDuration());
         });
 
-        // Event listener to update current time as the audio plays
+        // event listener to update current time as the audio plays
         wavesurferRef.current.on('audioprocess', () => {
             setCurrentTime(wavesurferRef.current.getCurrentTime());
         });
 
 
         return () => {
-        // Destroy wavesurfer instance on component unmount
+        // destroy wavesurfer instance on component unmount
             if (wavesurferRef.current) {
                 wavesurferRef.current.destroy();
             }
@@ -65,7 +65,6 @@ const Waveform = ({ audioUrl, playing, handlePlayPause }) => {
                 <span>{formatTime(duration)}</span>
             </div>
         </div>
-        
     );
 };
 

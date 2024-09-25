@@ -1,5 +1,6 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import RecordingStorage from "./pages/RecordingStorage";
+import SpeechRecord from "./pages/SpeechRecord";
 
 function App() {
   return (
@@ -7,6 +8,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/record-storage" element={<RecordingStorage />} />
+          <Route path="/speech-record" element={<SpeechRecord />} />
           </Routes>
       </Router>
     </>
