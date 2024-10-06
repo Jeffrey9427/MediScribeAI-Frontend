@@ -29,9 +29,6 @@ function AudioContent( {totalRecordings, activeAudio, playing, handlePlayPause }
                                 playing={playing} 
                                 handlePlayPause={handlePlayPause} 
                             />
-
-                            {/* section displaying the transcription for the active audio */}
-                            <TranscriptionContent />
                         </>
                     )}
                 </div> 

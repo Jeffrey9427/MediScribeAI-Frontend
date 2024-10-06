@@ -21,7 +21,7 @@ const Waveform = ({ audioUrl, playing, handlePlayPause }) => {
             waveColor: '#ddd',
             progressColor: '#F87060',
             cursorColor: '#F87060',
-            height: 250,
+            height: 300,
             responsive: true,
         });
 

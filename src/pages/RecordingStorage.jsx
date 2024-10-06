@@ -1,39 +1,52 @@
-import AudioContent from "../components/AudioContent";
 import Header from "../components/Header";
 import SearchAudio from "../components/SearchAudio";
 import audioData from '../data';
 import React, { useState, useEffect } from 'react';
 import AudioList from "../components/AudioList";
+import TranscriptionContent from "../components/TranscriptionContent";
 import CreateButton from "../components/CreateButton";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 
 function RecordingStorage() {
+    const location = useLocation();
     const totalRecordings = audioData.length; 
     const [playing, setPlaying] = useState(false);
-    const [activeAudio, setActiveAudio] = useState(null); // state to track active audio
+    const [activeAudio, setActiveAudio] = useState(audioData[0]); // state to track active audio
     const [searchTerm, setSearchTerm] = useState('');
     const subtitle = "Collection of your audio recordings";
     const nav = useNavigate();
+    const [transcriptionData, setTranscriptionData] = useState(activeAudio?.transcription || []);
 
     const handleButtonClick = () => {
         nav("/speech-record");
     };
 
     useEffect(() => {
-        if (audioData.length > 0) {
-            setActiveAudio(audioData[0]); // set the first audio as active
+        // If there's an active audio passed from the SpeechRecord page, set it
+        if (location.state?.activeAudio) {
+            setActiveAudio(location.state.activeAudio);
         }
-    }, []);
+    }, [location.state]);
+
+    useEffect(() => {
+        if (activeAudio) {
+            setTranscriptionData(activeAudio.transcription || []);
+        }
+    }, [activeAudio]);
+
 
     const handlePlayPause = () => {
         setPlaying(!playing);
     };
 
     const handleAudioClick = (audio) => {
-        // set the clicked audio as active
-        setActiveAudio(audio);
-        setPlaying(false); // ensure it doesn't auto-play when selected
-    }
+        if (activeAudio?.id === audio.id) {
+            setActiveAudio(null); // if clicked again, hide the content
+        } else {
+            setActiveAudio(audio);
+            setPlaying(false); // stop playing when switching audio
+        }
+    };
 
     const filteredAudioData = audioData.filter(audio => 
         audio.title.toLowerCase().includes(searchTerm.toLowerCase()) // match title with search term
@@ -48,20 +61,23 @@ function RecordingStorage() {
             </div>
             <Header subtitle={subtitle} totalRecordings={totalRecordings}/>
 
-            {/* Audio Content and Transcription Section */}
-            <AudioContent 
-                totalRecordings={totalRecordings} 
-                activeAudio={activeAudio} 
-                playing={playing} 
-                handlePlayPause={handlePlayPause} 
-            />
 
-            {/* Audio List Section */}
-            <AudioList 
-                audioData={filteredAudioData} 
-                handleAudioClick={handleAudioClick} 
-                activeAudio={activeAudio} 
-            />
+            <div className="flex gap-20">
+                <div className="flex-1">
+                    {/* Audio List Section */}
+                    <AudioList 
+                        audioData={filteredAudioData} 
+                        handleAudioClick={handleAudioClick} 
+                        activeAudio={activeAudio} 
+                        playing={playing}
+                        handlePlayPause={handlePlayPause}
+                    />
+                </div>
+                <div className="flex-1">
+                    {/* section displaying the transcription for the active audio */}
+                    <TranscriptionContent transcriptionData={transcriptionData} setTranscriptionData={setTranscriptionData} />
+                </div>
+            </div>
         </div>
     )
 }
