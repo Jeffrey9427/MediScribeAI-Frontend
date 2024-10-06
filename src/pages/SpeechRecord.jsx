@@ -6,11 +6,13 @@ import CancelButton from "../components/CancelButton";
 import { useNavigate } from "react-router-dom";
 import RecordAudio from "../components/RecordAudio";
 import AudioList from "../components/AudioList";
+import AudioPlayer from "../components/AudioPlayer";
 
 function SpeechRecord() {
     const totalRecordings = audioData.length; 
     const subtitle = "Start and create a new recording";
     const [searchTerm, setSearchTerm] = useState('');
+    const [uploadedAudio, setUploadedAudio] = useState(null);  // track uploaded/recorded audio file
     const nav = useNavigate();
 
     const handleButtonClick = () => {
@@ -19,6 +21,8 @@ function SpeechRecord() {
 
     const handleAudioUpload = (file) => {
         console.log("Uploaded file: ", file);
+        const audioUrl = URL.createObjectURL(file);
+        setUploadedAudio(audioUrl); 
 
         // check di console
         // continue with saving audio in s3 bucket
@@ -27,6 +31,15 @@ function SpeechRecord() {
     const handleAudioClick = (audio) => {
         // set the clicked audio as active
         nav("/record-storage", { state: { activeAudio: audio } });
+    }
+
+    const handleAudioDelete = () => {
+        setUploadedAudio(null); 
+    }
+
+    const handleTitleSave = (title) => {
+        console.log("Saved Title: ", title);
+        // continue with saving title to backend, S3, or database
     }
 
     const filteredAudioData = audioData.filter(audio => 
@@ -43,7 +56,15 @@ function SpeechRecord() {
             <Header subtitle={subtitle} totalRecordings={totalRecordings} />
 
             {/* Record / Upload Audio Section */}
-            <RecordAudio onUpload={handleAudioUpload} />
+            {uploadedAudio ? (
+                <AudioPlayer 
+                    audioFile={uploadedAudio} 
+                    onDelete={handleAudioDelete} 
+                    onSave={handleTitleSave} 
+                />
+            ) : (
+                <RecordAudio onUpload={handleAudioUpload} />
+            )}
 
             {/* Audio List Section */}
             <AudioList 

@@ -7,6 +7,7 @@ const Waveform = ({ audioUrl, playing, handlePlayPause }) => {
     const [currentTime, setCurrentTime] = useState(0);
     const [duration, setDuration] = useState(0);
 
+
     // format time helper function to format seconds to mm:ss
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
@@ -23,10 +24,13 @@ const Waveform = ({ audioUrl, playing, handlePlayPause }) => {
             cursorColor: '#F87060',
             height: 300,
             responsive: true,
+            partial: false,
         });
 
         // load the audio file into wavesurfer
-        wavesurferRef.current.load(audioUrl);
+        if (audioUrl) {
+            wavesurferRef.current.load(audioUrl);
+        }
 
         // event listener to update duration once the audio is loaded
         wavesurferRef.current.on('ready', () => {
@@ -40,9 +44,12 @@ const Waveform = ({ audioUrl, playing, handlePlayPause }) => {
 
 
         return () => {
-        // destroy wavesurfer instance on component unmount
             if (wavesurferRef.current) {
-                wavesurferRef.current.destroy();
+                try {
+                    wavesurferRef.current.destroy();
+                } catch (error) {
+                    console.error("Error destroying wavesurfer instance:", error);
+                }
             }
         };
     }, [audioUrl]);
