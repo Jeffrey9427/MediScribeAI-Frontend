@@ -19,13 +19,27 @@ function SpeechRecord() {
         nav("/record-storage");
     };
 
-    const handleAudioUpload = (file) => {
-        console.log("Uploaded file: ", file);
+    const handleAudioUpload = async (file) => {
+        console.log("Uploaded file: ", file.File);
+        const formData = new FormData();
+        formData.append("file_upload", file);
+
         const audioUrl = URL.createObjectURL(file);
         setUploadedAudio(audioUrl); 
 
         // check di console
         // continue with saving audio in s3 bucket
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/s3/audio/upload`, {
+                method: "POST",
+                body: formData
+            });
+            if (response.ok) console.log("File uploaded successfully!");
+            else console.error("Failed to upload file!")
+        } catch (e) {
+            console.error(error)
+        }
+
     }
 
     const handleAudioClick = (audio) => {
