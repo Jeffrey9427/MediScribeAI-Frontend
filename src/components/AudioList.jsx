@@ -2,7 +2,7 @@ import AudioItem from './AudioItem';
 import AudioContent from './AudioContent';
 import { AnimatePresence, motion } from 'framer-motion';
 
-function AudioList({ audioData, handleAudioClick, activeAudio, playing, handlePlayPause }) {
+function AudioList({ audioData, handleAudioClick, activeAudio, playing, handlePlayPause, handleDelete, handleEdit }) {
     return (
         <div className="mt-6 space-y-4">
             {audioData.map((audio) => (
@@ -11,6 +11,8 @@ function AudioList({ audioData, handleAudioClick, activeAudio, playing, handlePl
                         audio={audio}
                         active={activeAudio?.id === audio.id}
                         onClick={() => handleAudioClick(audio)}
+                        onDelete={handleDelete} 
+                        onEdit={handleEdit} 
                     />
                     
                     {/* If this is the active audio, display AudioContent below it */}

@@ -9,9 +9,10 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 function RecordingStorage() {
     const location = useLocation();
-    const totalRecordings = audioData.length; 
+    const [audioRecords, setAudioRecords] = useState(audioData);
+    const totalRecordings = audioRecords.length; 
     const [playing, setPlaying] = useState(false);
-    const [activeAudio, setActiveAudio] = useState(audioData[0]); // state to track active audio
+    const [activeAudio, setActiveAudio] = useState(audioRecords[0]); // state to track active audio
     const [searchTerm, setSearchTerm] = useState('');
     const subtitle = "Collection of your audio recordings";
     const nav = useNavigate();
@@ -48,9 +49,26 @@ function RecordingStorage() {
         }
     };
 
-    const filteredAudioData = audioData.filter(audio => 
+    const filteredAudioData = audioRecords.filter(audio => 
         audio.title.toLowerCase().includes(searchTerm.toLowerCase()) // match title with search term
     );
+
+    const handleDelete = (id) => {
+        setAudioRecords(prev => prev.filter(audio => audio.id !== id));
+        if (activeAudio?.id === id) {
+            setActiveAudio(null); // Reset active audio if deleted
+        }
+
+        // lanjut w delete audio in s3
+    };
+
+    const handleEdit = (id, newTitle) => {
+        setAudioRecords(prev =>
+            prev.map(audio => audio.id === id ? { ...audio, title: newTitle } : audio)
+        );
+
+        // lanjut w edit audio title in s3
+    };
 
     return (
         <div className="bg-white ml-48 h-screen rounded-l-3xl py-16 px-28 text-left overflow-y-scroll " >
@@ -71,6 +89,8 @@ function RecordingStorage() {
                         activeAudio={activeAudio} 
                         playing={playing}
                         handlePlayPause={handlePlayPause}
+                        handleDelete={handleDelete}
+                        handleEdit={handleEdit}
                     />
                 </div>
                 <div className="flex-1">
