@@ -9,12 +9,25 @@ function AudioPlayer ( { audioFile, onDelete, onSave } ) {
     const [title, setTitle] = useState("");
 
     const handleSaveClick = () => {
-        onSave(title);
+        const finalTitle = title.trim() === "" ? getCurrentDateTimeString() : title;
+        onSave(finalTitle);
     };
 
     const handlePlayPause = () => {
         setPlaying(!playing);
     };
+
+    const getCurrentDateTimeString = () => {
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const year = now.getFullYear();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+
+        return `AUDIO_${day}${month}${year}_${hours}${minutes}`;
+    };
+
 
     return(
         <div className="w-full border-2 border-dashed border-black p-6 rounded-3xl mt-10">
@@ -44,8 +57,8 @@ function AudioPlayer ( { audioFile, onDelete, onSave } ) {
                         type="text"
                         value={title}
                         onChange={(e) => setTitle(e.target.value)}
-                        placeholder="Enter title..."
-                        className="border-primary border-2 pl-5 py-2 rounded-3xl placeholder:text-primary mr-5"
+                        placeholder={getCurrentDateTimeString()}
+                        className="border-primary border-2 pl-5 pr-10 py-2 rounded-3xl placeholder:text-primary mr-5 text-primary placeholder:opacity-60"
                     />
                     <button
                         className="bg-primary text-white px-6 py-2 rounded-3xl font-medium"
