@@ -3,7 +3,7 @@ import Upload from "../assets/upload.svg";
 import Stop from "../assets/stop.svg";
 import { useRef, useState, useEffect } from "react";
 
-function RecordAudio({onUpload}) {
+function RecordAudio2({onUpload, finalTitle}) {
     const fileInputRef = useRef(null);
     const [isRecording, setIsRecording] = useState(false);
     const [recorder, setRecorder] = useState(null); 
@@ -51,28 +51,18 @@ function RecordAudio({onUpload}) {
     const startRecording = async () => {
         // request permission to use the microphone
         const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        const newRecorder = new MediaRecorder(stream, { mimeType: 'audio/webm' });
-
-        let localAudioChunks = [];
+        const newRecorder = new MediaRecorder(stream);
 
         newRecorder.ondataavailable = (event) => {
-            if (event.data.size > 0) {
-                localAudioChunks.push(event.data); // Push to local array
-            }
+            setAudioChunks((prev) => [...prev, event.data]);
         };
 
         newRecorder.onstop = () => {
-            if (localAudioChunks.length > 0) {
-                const audioBlob = new Blob(localAudioChunks, { type: "audio/webm" });
-                const audioFile = new File([audioBlob], "recording.webm", { type: "audio/webm" });
-                onUpload(audioFile); // pass the recorded file to the parent
-            } else {
-                console.error("No audio data recorded.");
-            }
-
+            const audioBlob = new Blob(audioChunks, { type: "audio/wav" });
+            const audioFile = new File([audioBlob], finalTitle, { type: "audio/wav" });
+            onUpload(audioFile); // pass the recorded file to the parent
             setAudioChunks([]); // clear the chunks for future recordings
             setElapsedTime(0);
-            stream.getTracks().forEach(track => track.stop());
         };
 
         setRecorder(newRecorder);
@@ -81,10 +71,8 @@ function RecordAudio({onUpload}) {
     };
 
     const stopRecording = () => {
-        if (recorder) {
-            recorder.stop();
-            setIsRecording(false);
-        }
+        recorder.stop();
+        setIsRecording(false);
     };
 
     const handleRecordClick = () => {
@@ -144,4 +132,4 @@ function RecordAudio({onUpload}) {
     )
 }
 
-export default RecordAudio;
+export default RecordAudio2;

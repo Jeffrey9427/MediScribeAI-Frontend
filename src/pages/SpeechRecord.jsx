@@ -13,6 +13,7 @@ function SpeechRecord() {
     const subtitle = "Start and create a new recording";
     const [searchTerm, setSearchTerm] = useState('');
     const [uploadedAudio, setUploadedAudio] = useState(null);  // track uploaded/recorded audio file
+    const [uploadedAudioName, setUploadedAudioName] = useState('');
     const nav = useNavigate();
 
     const handleButtonClick = () => {
@@ -20,9 +21,13 @@ function SpeechRecord() {
     };
 
     const handleAudioUpload = async (file) => {
-        console.log("Uploaded file: ", file.File);
+        console.log("Uploaded file: ", file);  // file object logged here
+        setUploadedAudioName(file.name);  
+        console.log(file.name);  
+
         const formData = new FormData();
         formData.append("file_upload", file);
+        formData.append("doctor_id", 1);
 
         const audioUrl = URL.createObjectURL(file);
         setUploadedAudio(audioUrl); 
@@ -39,7 +44,6 @@ function SpeechRecord() {
         } catch (e) {
             console.error(error)
         }
-
     }
 
     const handleAudioClick = (audio) => {
@@ -51,9 +55,32 @@ function SpeechRecord() {
         setUploadedAudio(null); 
     }
 
-    const handleTitleSave = (title) => {
-        console.log("Saved Title: ", title);
+    const handleTitleSave = async (newTitle) => {
+        console.log("Saved Title: ", newTitle);
         // continue with saving title to backend, S3, or database
+        const formData = new FormData();
+        formData.append("update", newTitle);
+
+        console.log("Uploaded Audio Name: ", uploadedAudioName);
+
+        // try {
+        //     const response = await fetch(`http://127.0.0.1:8000/s3/audio/update/${uploadedAudioName}`, {
+        //         method: "PUT",
+        //         headers: {
+        //             "Content-Type": "application/json",
+        //         },
+        //         body: JSON.stringify({ new_title: newTitle }) 
+        //     });
+    
+        //     if (response.ok) {
+        //         console.log("Title updated successfully!");
+        //         nav("/record-storage");
+        //     } else {
+        //         console.error("Failed to update title!");
+        //     }
+        // } catch (error) {
+        //     console.error("Error while updating title:", error);
+        // }
     }
 
     const filteredAudioData = audioData.filter(audio => 
