@@ -51,8 +51,17 @@ function SpeechRecord() {
         nav("/record-storage", { state: { activeAudio: audio } });
     }
 
-    const handleAudioDelete = () => {
-        setUploadedAudio(null); 
+    const handleAudioDelete = async (id) => {
+        setUploadedAudio(null);
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/s3/audio/delete/${id}`, {
+                method: "DELETE",
+            });
+            if (response.ok) console.log("File deleted successfully!");
+            else console.error("Failed to delete file!")
+        } catch (e) {
+            console.error(error)
+        }
     }
 
     const handleTitleSave = async (newTitle) => {
