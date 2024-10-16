@@ -64,32 +64,32 @@ function SpeechRecord() {
         }
     }
 
-    const handleTitleSave = async (newTitle) => {
+    const handleTitleSave = async (id, newTitle) => {
         console.log("Saved Title: ", newTitle);
         // continue with saving title to backend, S3, or database
-        const formData = new FormData();
-        formData.append("update", newTitle);
 
         console.log("Uploaded Audio Name: ", uploadedAudioName);
 
-        // try {
-        //     const response = await fetch(`http://127.0.0.1:8000/s3/audio/update/${uploadedAudioName}`, {
-        //         method: "PUT",
-        //         headers: {
-        //             "Content-Type": "application/json",
-        //         },
-        //         body: JSON.stringify({ new_title: newTitle }) 
-        //     });
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/s3/audio/edit/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: {
+                    "new_filename": newTitle
+                } 
+            });
     
-        //     if (response.ok) {
-        //         console.log("Title updated successfully!");
-        //         nav("/record-storage");
-        //     } else {
-        //         console.error("Failed to update title!");
-        //     }
-        // } catch (error) {
-        //     console.error("Error while updating title:", error);
-        // }
+            if (response.ok) {
+                console.log("Title updated successfully!");
+                nav("/record-storage");
+            } else {
+                console.error("Failed to update title!");
+            }
+        } catch (error) {
+            console.error("Error while updating title:", error);
+        }
     }
 
     const filteredAudioData = audioData.filter(audio => 
@@ -119,7 +119,8 @@ function SpeechRecord() {
             {/* Audio List Section */}
             <AudioList 
                 audioData={filteredAudioData} 
-                handleAudioClick={handleAudioClick} 
+                handleAudioClick={handleAudioClick}
+                handleEdit={handleTitleSave}
             />
         </div>
     )
