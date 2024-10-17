@@ -2,6 +2,20 @@ import PlayButton from "../assets/playbtn1.svg"
 import PauseButton from "../assets/pause.svg"
 
 function AudioContentHeader({ playing, handlePlayPause, audio }) {
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        
+        const formattedDate = date.toLocaleString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    
+        return formattedDate.replace(",", ""); // Optional: remove comma if not needed
+    }
+
     return (
         <div className="flex items-center">
             <div className="grow flex">
@@ -12,13 +26,13 @@ function AudioContentHeader({ playing, handlePlayPause, audio }) {
                     alt="play/pause button"
                 />
                 <div className="flex flex-col ml-10">
-                    <p className="text-2xl font-medium mb-1">{audio.title}</p>
-                    <p className="text-lg text-quaternary font-medium">{audio.datetime}</p>
+                    <p className="text-2xl font-medium mb-1">{audio.file_name}</p>
+                    <p className="text-lg text-quaternary font-medium">{formatDate(audio.created_at)}</p>
                 </div>
             </div>
             <div className="flex-none">
                 <a 
-                    href={audio.audioUrl} 
+                    href={`http://127.0.0.1:8000/s3/audio/download/${audio.s3_key}`}
                     download 
                     className="bg-transparent hover:bg-primary font-semibold text-primary hover:text-white px-5 py-3 text-xl rounded-lg flex gap-2 border-primary border-2 items-center"
                 >

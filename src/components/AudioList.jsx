@@ -6,10 +6,10 @@ function AudioList({ audioData, handleAudioClick, activeAudio, playing, handlePl
     return (
         <div className="mt-6 space-y-4">
             {audioData.map((audio) => (
-                <div key={audio.id}>
+                <div key={audio.s3_key}>
                     <AudioItem
                         audio={audio}
-                        active={activeAudio?.id === audio.id}
+                        active={activeAudio?.s3_key === audio.s3_key}
                         onClick={() => handleAudioClick(audio)}
                         onDelete={handleDelete} 
                         onEdit={handleEdit} 
@@ -17,9 +17,9 @@ function AudioList({ audioData, handleAudioClick, activeAudio, playing, handlePl
                     
                     {/* If this is the active audio, display AudioContent below it */}
                     <AnimatePresence>
-                        {activeAudio?.id === audio.id && (
+                        {activeAudio?.s3_key === audio.s3_key && (
                             <motion.div
-                                key={audio.id}
+                                key={audio.s3_key}
                                 initial={{ opacity: 0, height: 0 }}
                                 animate={{ opacity: 1, height: 'auto' }}
                                 exit={{ opacity: 0, height: 0 }}

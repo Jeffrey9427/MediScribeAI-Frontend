@@ -4,13 +4,13 @@ import PauseButton from "../assets/pause.svg"
 import React, { useState } from 'react';
 import DeleteIcon from "../assets/deleteBlue.svg";
 
-function AudioPlayer ( { audioFile, onDelete, onSave } ) {
+function AudioPlayer ( { audioFile, onDelete, onSave, s3_key } ) {
     const [playing, setPlaying] = useState(false);
     const [title, setTitle] = useState("");
 
     const handleSaveClick = () => {
-        const finalTitle = title.trim() === "" ? getCurrentDateTimeString() : title;
-        onSave(finalTitle);
+        const newTitle = title.trim() === "" ? getCurrentDateTimeString() : title;
+        onSave(s3_key, newTitle);
     };
 
     const handlePlayPause = () => {
@@ -83,7 +83,7 @@ function AudioPlayer ( { audioFile, onDelete, onSave } ) {
                         className=" cursor-pointer"
                         onClick={(e) => {
                             e.stopPropagation(); 
-                            onDelete(audio.id); 
+                            onDelete(audio.s3_key); 
                         }}
                     />
                 </div>
