@@ -25,7 +25,7 @@ function AudioContent( {totalRecordings, activeAudio, playing, handlePlayPause }
 
                             {/* waveform visual representation of the audio */}
                             <Waveform 
-                                audioUrl={activeAudio.audioUrl} 
+                                audioUrl={activeAudio.audio_url} 
                                 playing={playing} 
                                 handlePlayPause={handlePlayPause} 
                             />

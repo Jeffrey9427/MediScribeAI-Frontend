@@ -5,11 +5,11 @@ import { useState } from "react";
 
 function AudioItem({ audio, active, onClick, onEdit, onDelete }) {
     const [isEditing, setIsEditing] = useState(false);
-    const [newTitle, setNewTitle] = useState(audio.title); 
+    const [newTitle, setNewTitle] = useState(audio.file_name); 
 
     const handleEditClick = () => {
         if (isEditing) {
-            onEdit(audio.id, newTitle); 
+            onEdit(audio.s3_key, newTitle); 
         }
         setIsEditing(!isEditing); 
     };
@@ -20,6 +20,20 @@ function AudioItem({ audio, active, onClick, onEdit, onDelete }) {
             handleEditClick(); 
         }
     };
+
+    const formatDate = (dateString) => {
+        const date = new Date(dateString);
+        
+        const formattedDate = date.toLocaleString("en-GB", {
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric",
+            hour: "2-digit",
+            minute: "2-digit",
+        });
+    
+        return formattedDate.replace(",", ""); // Optional: remove comma if not needed
+    }
 
     return (
         <div 
@@ -40,11 +54,11 @@ function AudioItem({ audio, active, onClick, onEdit, onDelete }) {
                         className="text-[1.375rem] font-medium text-black"
                     />
                 ) : (
-                    <p className={`text-[1.375rem] font-${active ? 'medium' : 'bold'}`}>{audio.title}</p>
+                    <p className={`text-[1.375rem] font-${active ? 'medium' : 'bold'}`}>{audio.file_name}</p>
                 )}
             </div>
             <div className="flex-none mr-5">
-                <p className={`text-lg ${active ? 'text-white' : 'text-quaternary'}`}>{audio.datetime}</p>
+                <p className={`text-lg ${active ? 'text-white' : 'text-quaternary'}`}>{formatDate(audio.created_at)}</p>
             </div>
             <div className="flex items-center flex-none relative">
                 <p className={`text-lg ${active ? 'text-white' : 'text-quaternary'} transition-all duration-100`}>{audio.duration}</p>
@@ -69,7 +83,7 @@ function AudioItem({ audio, active, onClick, onEdit, onDelete }) {
                             className="w-5 group-hover:ml-4 opacity-0 group-hover:opacity-100 transition-all duration-100 cursor-pointer"
                             onClick={(e) => {
                                 e.stopPropagation(); 
-                                onDelete(audio.id); 
+                                onDelete(audio.s3_key); 
                             }}
                         />
                         

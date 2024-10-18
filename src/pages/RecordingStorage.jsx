@@ -1,6 +1,5 @@
 import Header from "../components/Header";
 import SearchAudio from "../components/SearchAudio";
-import audioData from '../data';
 import React, { useState, useEffect } from 'react';
 import AudioList from "../components/AudioList";
 import TranscriptionContent from "../components/TranscriptionContent";
@@ -9,10 +8,30 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 function RecordingStorage() {
     const location = useLocation();
-    const [audioRecords, setAudioRecords] = useState(audioData);
-    const totalRecordings = audioRecords.length; 
+    const [audioData, setAudioData] = useState([]);
+
+    useEffect(() => {
+        const fetchAudioData = async () => {
+            try {
+                const response = await fetch('http://127.0.0.1:8000/s3/audio/get_all_file_detail');
+                if (response.ok) {
+                    const data = await response.json();
+                    setAudioData(data);
+                    console.log("Fetched audio data: ", data);
+                } else {
+                    console.error("Failed to fetch audio data");
+                }
+            } catch (error) {
+                console.error("Error fetching audio data:", error);
+            }
+        };
+
+        fetchAudioData();
+    }, []);
+
+    const totalRecordings = audioData.length; 
     const [playing, setPlaying] = useState(false);
-    const [activeAudio, setActiveAudio] = useState(audioRecords[0]); // state to track active audio
+    const [activeAudio, setActiveAudio] = useState(audioData[0]); // state to track active audio
     const [searchTerm, setSearchTerm] = useState('');
     const subtitle = "Collection of your audio recordings";
     const nav = useNavigate();
@@ -41,7 +60,7 @@ function RecordingStorage() {
     };
 
     const handleAudioClick = (audio) => {
-        if (activeAudio?.id === audio.id) {
+        if (activeAudio?.s3_key === audio.s3_key) {
             setActiveAudio(null); // if clicked again, hide the content
         } else {
             setActiveAudio(audio);
@@ -49,25 +68,65 @@ function RecordingStorage() {
         }
     };
 
-    const filteredAudioData = audioRecords.filter(audio => 
-        audio.title.toLowerCase().includes(searchTerm.toLowerCase()) // match title with search term
+    const filteredAudioData = audioData.filter(audio => 
+        audio.file_name.toLowerCase().includes(searchTerm.toLowerCase()) // match title with search term
     );
 
-    const handleDelete = (id) => {
-        setAudioRecords(prev => prev.filter(audio => audio.id !== id));
-        if (activeAudio?.id === id) {
-            setActiveAudio(null); // Reset active audio if deleted
+    const handleDelete = async (s3_key) => {
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/s3/audio/delete/${s3_key}`, {
+                method: "DELETE",
+            });
+            if (response.ok) {
+                console.log("File deleted successfully!");
+                setAudioData(prev => prev.filter(audio => audio.s3_key !== s3_key));
+                if (activeAudio?.s3_key === s3_key) {
+                    setActiveAudio(null); // Reset active audio if deleted
+                }
+            }
+            else console.error("Failed to delete file!")
+        } catch (e) {
+            console.error(error)
         }
 
         // lanjut w delete audio in s3
     };
 
-    const handleEdit = (id, newTitle) => {
-        setAudioRecords(prev =>
-            prev.map(audio => audio.id === id ? { ...audio, title: newTitle } : audio)
-        );
+    const handleEdit = async (s3_key, newTitle) => {
+        try {
+            const parts = s3_key.split('_', 2);
+            const newS3Key = `${parts[0]}_${parts[1]}_${newTitle}`;
 
-        // lanjut w edit audio title in s3
+            const response = await fetch(`http://127.0.0.1:8000/s3/audio/edit/${s3_key}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({  
+                    new_filename: newTitle
+                })
+            });
+    
+            if (response.ok) {
+                setAudioData(prev =>
+                    prev.map(audio => 
+                        audio.s3_key === s3_key 
+                            ? { ...audio, file_name: newTitle, s3_key: newS3Key } 
+                            : audio
+                    )
+                );
+
+                if (activeAudio?.s3_key === s3_key) {
+                    setActiveAudio(prev => ({ ...prev, file_name: newTitle, s3_key: newS3Key }));
+                }
+                
+                console.log("Title updated successfully!");
+            } else {
+                console.error("Failed to update title!");
+            }
+        } catch (error) {
+            console.error("Error while updating title:", error);
+        }
     };
 
     return (

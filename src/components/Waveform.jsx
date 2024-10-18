@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import WaveSurfer from 'wavesurfer.js';
 
-const Waveform = ({ audioUrl, playing, handlePlayPause }) => {
+const Waveform = ({ audioUrl, playing }) => {
     const waveformRef = useRef(null);
     const wavesurferRef = useRef(null);
     const [currentTime, setCurrentTime] = useState(0);
