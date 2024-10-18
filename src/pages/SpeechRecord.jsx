@@ -49,7 +49,7 @@ function SpeechRecord() {
         setAudioFile(file);
     }
 
-    const handleAudioUpload = async (title) => {
+    const handleAudioUpload = async (s3_key, title) => {
         let uploadFile = audioFile;
         if(title) uploadFile = new File([audioFile], title + '.' + audioFile.name.split(".").pop(), {"type": audioFile.type});
         
