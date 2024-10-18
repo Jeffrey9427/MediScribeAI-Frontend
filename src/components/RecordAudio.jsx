@@ -3,12 +3,12 @@ import Upload from "../assets/upload.svg";
 import Stop from "../assets/stop.svg";
 import { useRef, useState, useEffect } from "react";
 
-function RecordAudio({onUpload}) {
+function RecordAudio({onSubmit}) {
     const fileInputRef = useRef(null);
     const [isRecording, setIsRecording] = useState(false);
     const [recorder, setRecorder] = useState(null); 
     const [audioChunks, setAudioChunks] = useState([]);
-    const [elapsedTime, setElapsedTime] = useState(0); // Track the elapsed recording time
+    const [elapsedTime, setElapsedTime] = useState(0); // Track the elapsed recording
     const MAX_DURATION = 600;
 
     useEffect(() => {
@@ -44,7 +44,7 @@ function RecordAudio({onUpload}) {
         const file = event.target.files[0];
 
         if (file) {
-            onUpload(file);
+            onSubmit(file);
         }
     }
 
@@ -65,7 +65,7 @@ function RecordAudio({onUpload}) {
             if (localAudioChunks.length > 0) {
                 const audioBlob = new Blob(localAudioChunks, { type: "audio/webm" });
                 const audioFile = new File([audioBlob], "recording.webm", { type: "audio/webm" });
-                onUpload(audioFile); // pass the recorded file to the parent
+                onSubmit(audioFile); // pass the recorded file to the parent
             } else {
                 console.error("No audio data recorded.");
             }

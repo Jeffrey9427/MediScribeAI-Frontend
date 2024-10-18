@@ -1,7 +1,7 @@
 import Header from "../components/Header";
 import SearchAudio from "../components/SearchAudio";
 import audioData from '../data';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import CancelButton from "../components/CancelButton";
 import { useNavigate } from "react-router-dom";
 import RecordAudio from "../components/RecordAudio";
@@ -12,6 +12,7 @@ function SpeechRecord() {
     const totalRecordings = audioData.length; 
     const subtitle = "Start and create a new recording";
     const [searchTerm, setSearchTerm] = useState('');
+    const [audioFile, setAudioFile] = useState(null);
     const [uploadedAudio, setUploadedAudio] = useState(null);  // track uploaded/recorded audio file
     const [uploadedAudioName, setUploadedAudioName] = useState('');
     const nav = useNavigate();
@@ -20,17 +21,53 @@ function SpeechRecord() {
         nav("/record-storage");
     };
 
-    const handleAudioUpload = async (file) => {
-        console.log("Uploaded file: ", file);  // file object logged here
-        setUploadedAudioName(file.name);  
-        console.log(file.name);  
+    const handleAudioSubmit = async (file) => {
+        const audioUrl = URL.createObjectURL(file);
+        setUploadedAudio(audioUrl);
+        setAudioFile(file);
+    }
+
+    const handleAudioUpload = async (title) => {
+        let uploadFile = audioFile;
+        if(title) uploadFile = new File([audioFile], title + '.' + audioFile.name.split(".").pop(), {"type": audioFile.type});
+        
+        console.log("Uploaded file: ", uploadFile);  // file object logged here
+        setUploadedAudioName(uploadFile.name);  
+        console.log(uploadFile.name);
 
         const formData = new FormData();
-        formData.append("file_upload", file);
+        formData.append("file_upload", uploadFile);
         formData.append("doctor_id", 1);
+        formData.append("patient_name", "test123");
 
-        const audioUrl = URL.createObjectURL(file);
-        setUploadedAudio(audioUrl); 
+        // check di console
+        // continue with saving audio in s3 bucket
+        try {
+            const response = await fetch(`http://127.0.0.1:8000/s3/audio/upload`, {
+                method: "POST",
+                body: formData
+            });
+            if (response.ok) console.log("File uploaded successfully!");
+            else console.error("Failed to upload file!")
+        } catch (e) {
+            console.error(error)
+        }
+    }
+
+    const handleAudioRecordTitleSubmit = async (newTitle) => {
+        console.log(newTitle)
+
+        handleAudioUpload(newTitle);
+        return;
+
+        console.log("Uploaded file: ", audioFile);  // file object logged here
+        setUploadedAudioName(audioFile.name);  
+        console.log(audioFile.name);  
+
+        const formData = new FormData();
+        formData.append("file_upload", audioFile);
+        formData.append("doctor_id", 1);
+        formData.append("patient_name", "test123");
 
         // check di console
         // continue with saving audio in s3 bucket
@@ -110,10 +147,10 @@ function SpeechRecord() {
                 <AudioPlayer 
                     audioFile={uploadedAudio} 
                     onDelete={handleAudioDelete} 
-                    onSave={handleTitleSave} 
+                    onSave={handleAudioRecordTitleSubmit} 
                 />
             ) : (
-                <RecordAudio onUpload={handleAudioUpload} />
+                <RecordAudio onSubmit={handleAudioSubmit} />
             )}
 
             {/* Audio List Section */}
