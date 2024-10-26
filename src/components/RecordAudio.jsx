@@ -2,6 +2,7 @@ import Microphone from "../assets/microphone.svg";
 import Upload from "../assets/upload.svg";
 import Stop from "../assets/stop.svg";
 import { useRef, useState, useEffect } from "react";
+import { WavRecorder } from "webm-to-wav-converter";
 
 function RecordAudio({onUpload}) {
     const fileInputRef = useRef(null);
@@ -80,11 +81,25 @@ function RecordAudio({onUpload}) {
         setIsRecording(true);
     };
 
-    const stopRecording = () => {
+    const stopRecording = async () => {
         if (recorder) {
             recorder.stop();
             setIsRecording(false);
         }
+
+        const audioBlob = new Blob(audioChunks, { type: "audio/webm" });
+          
+        // Convert WebM to WAV asynchronously
+        const wavRecorder = new WavRecorder(audioBlob);
+        const wavBlob = await wavRecorder.getData();
+    
+        const audioFile = new File([wavBlob], "recording.wav", { type: "audio/wav" });
+        onUpload(audioFile); // Pass the converted WAV file to the parent
+    
+        setAudioChunks([]); // clear the chunks for future recordings
+        setElapsedTime(0);
+        stream.getTracks().forEach(track => track.stop());
+            
     };
 
     const handleRecordClick = () => {

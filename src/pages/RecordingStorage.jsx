@@ -5,10 +5,13 @@ import AudioList from "../components/AudioList";
 import TranscriptionContent from "../components/TranscriptionContent";
 import CreateButton from "../components/CreateButton";
 import { useNavigate, useLocation } from "react-router-dom";
+import { Loader2 } from "lucide-react";
 
 function RecordingStorage() {
     const location = useLocation();
     const [audioData, setAudioData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false); // Track loading status
+    
 
     useEffect(() => {
         const fetchAudioData = async () => {
@@ -50,6 +53,7 @@ function RecordingStorage() {
 
     useEffect(() => {
         if (activeAudio) {
+            
             setTranscriptionData(activeAudio.transcription || []);
         }
     }, [activeAudio]);
@@ -59,12 +63,34 @@ function RecordingStorage() {
         setPlaying(!playing);
     };
 
-    const handleAudioClick = (audio) => {
+    const handleAudioClick = async (audio) => {
         if (activeAudio?.s3_key === audio.s3_key) {
             setActiveAudio(null); // if clicked again, hide the content
         } else {
             setActiveAudio(audio);
             setPlaying(false); // stop playing when switching audio
+
+            setIsLoading(true); // Set loading to true while fetching
+
+             // Fetch the transcription data for the selected audio
+            try {
+                
+                console.log(audio.s3_key)
+                const response = await fetch(`http://127.0.0.1:8000/transcribe/get_transcription/${audio.s3_key}`, {
+                    method: "GET",})
+              
+                if (response.ok) {
+                    const transcription = await response.json()
+                    setTranscriptionData(transcription);
+                } else {
+                    console.error("Failed to fetch transcription");
+                }
+            } catch (error) {
+                console.error("Error fetching transcription:", error);
+            } finally {
+                setIsLoading(false); // Set loading to false when done
+            }
+            
         }
     };
 
@@ -154,7 +180,23 @@ function RecordingStorage() {
                 </div>
                 <div className="flex-1">
                     {/* section displaying the transcription for the active audio */}
-                    <TranscriptionContent transcriptionData={transcriptionData} setTranscriptionData={setTranscriptionData} />
+                    {isLoading ? (
+                     
+                     <div className="flex flex-col items-center justify-center h-full w-full bg-white rounded-lg shadow-lg p-12">
+                     <Loader2 className="h-24 w-24 animate-spin text-primary" />
+                     <p className="mt-8 text-2xl font-semibold text-gray-700">Loading transcription...</p>
+                     <div className="mt-10 flex space-x-4">
+                       <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+                       <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+                       <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
+                     </div>
+                     <p className="mt-6 text-lg text-gray-500">This may take a few moment</p>
+                   </div>
+                    
+                    ) : (
+                        <TranscriptionContent transcriptionData={transcriptionData} setTranscriptionData={setTranscriptionData} />
+                    )}
+
                 </div>
             </div>
         </div>

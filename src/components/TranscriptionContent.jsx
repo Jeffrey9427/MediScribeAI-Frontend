@@ -14,7 +14,7 @@ function TranscriptionContent({ transcriptionData, setTranscriptionData }) {
     const handleSaveClick = (index) => {
         const updatedTranscriptions = transcriptionData.map((item, i) => {
             if (i === index) {
-                return { ...item, text: editedText };
+                return { ...item, transcript: editedText };
             }
             return item;
         });
@@ -22,6 +22,21 @@ function TranscriptionContent({ transcriptionData, setTranscriptionData }) {
         setTranscriptionData(updatedTranscriptions); // Update transcription data state
         setEditIndex(null); // Reset edit index
     };
+
+    const mapSpeakerLabel = (speakerLabel) => {
+        if (speakerLabel === "spk_0") return "Speaker 1";
+        if (speakerLabel === "spk_1") return "Speaker 2";
+        return speakerLabel; 
+    };
+
+    const formatTimestamp = (timeInSeconds) => {
+        const totalSeconds = Math.floor(timeInSeconds);
+        const minutes = Math.floor(totalSeconds / 60);
+        const seconds = totalSeconds % 60;
+        return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    };
+
+
 
     return (
         <div className="tabs px-8 py-7 mt-5 rounded-2xl shadow-xl mb-16 lexend ">
@@ -39,26 +54,27 @@ function TranscriptionContent({ transcriptionData, setTranscriptionData }) {
 
             <div className="overflow-y-auto max-h-[100vh]">
                 {transcriptionData.map((entry, index) => (
+            
                     <div
                         key={index}
                         className={`mt-8 px-4 border-l-[4px] rounded-l-sm ${
-                            entry.speaker === 'Speaker 1' ? 'border-primary' : 'border-secondary'
+                            entry.speaker_label === 'spk_0' ? 'border-primary' : 'border-secondary'
                         }`}
                     >
                         {/* Speaker and Timestamp */}
                         <p className="text-lg text-quinary flex space-x-4 items-center">
                             <span
                                 className={`font-medium ${
-                                    entry.speaker === 'Speaker 1' ? 'text-primary' : 'text-secondary'
+                                    entry.speaker_label === 'spk_0' ? 'text-primary' : 'text-secondary'
                                 }`}
                             >
-                                {entry.speaker}
+                                {mapSpeakerLabel(entry.speaker_label)}
                             </span>
-                            <span>{entry.timestamp}</span>
+                            <span> {formatTimestamp(entry.start_time)}</span>
                             <FaRegEdit
                                 size={22}
                                 className="-mt-1 cursor-pointer"
-                                onClick={() => handleEditClick(index, entry.text)}
+                                onClick={() => handleEditClick(index, entry.transcript)}
                             />
                         </p>
 
@@ -78,10 +94,11 @@ function TranscriptionContent({ transcriptionData, setTranscriptionData }) {
                                 </button>
                             </div>
                         ) : (
-                            <p className="text-lg text-quinary mt-1">{entry.text}</p>
+                            <p className="text-lg text-quinary mt-1">{entry.transcript}</p>
                         )}
                     </div>
                 ))}
+                
             </div>
         </div>
     )
