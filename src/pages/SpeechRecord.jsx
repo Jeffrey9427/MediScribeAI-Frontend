@@ -32,6 +32,7 @@ function SpeechRecord() {
 
     const subtitle = "Start and create a new recording";
     const [searchTerm, setSearchTerm] = useState('');
+    const [audioFile, setAudioFile] = useState(null);
     const [uploadedAudio, setUploadedAudio] = useState(null);  // track uploaded/recorded audio file
     const [uploadedAudioName, setUploadedAudioName] = useState('');
     const [audioRecord, setAudioRecord] = useState(null);
@@ -42,21 +43,25 @@ function SpeechRecord() {
         nav("/record-storage");
     };
 
-    const handleAudioUpload = async (file) => {
-        console.log("Uploaded file: ", file);  // file object logged here
-        setUploadedAudioName(file.name);  
-        console.log(file.name);  
+    const handleAudioSubmit = async (file) => {
+        const audioUrl = URL.createObjectURL(file);
+        setUploadedAudio(audioUrl);
+        setAudioFile(file);
+    }
+
+    const handleAudioUpload = async (s3_key, title) => {
+        let uploadFile = audioFile;
+        if(title) uploadFile = new File([audioFile], title + '.' + audioFile.name.split(".").pop(), {"type": audioFile.type});
+        
+        console.log("Uploaded file: ", uploadFile);  // file object logged here
+        setUploadedAudioName(uploadFile.name);  
+        console.log(uploadFile.name);
 
         const formData = new FormData();
-        formData.append("file_upload", file);
+        formData.append("file_upload", uploadFile);
         formData.append("doctor_id", 1);
         formData.append("patient_name", "John Doe");
 
-        const audioUrl = URL.createObjectURL(file);
-        setUploadedAudio(audioUrl); 
-
-        // check di console
-        // continue with saving audio in s3 bucket
         try {
             const response = await fetch(`http://127.0.0.1:8000/s3/audio/upload`, {
                 method: "POST",
@@ -74,6 +79,12 @@ function SpeechRecord() {
         } catch (e) {
             console.error(error)
         }
+    }
+
+    const handleAudioRecordTitleSubmit = async (newTitle) => {
+        console.log(newTitle)
+
+        handleAudioUpload(newTitle);
     }
 
     const handleAudioClick = (audio) => {
@@ -165,11 +176,11 @@ function SpeechRecord() {
                 <AudioPlayer 
                     audioFile={uploadedAudio} 
                     onDelete={handleAudioDelete} 
-                    onSave={handleTitleSave} 
+                    onSave={handleAudioRecordTitleSubmit} 
                     s3_key={audioRecord?.s3_key}
                 />
             ) : (
-                <RecordAudio onUpload={handleAudioUpload} />
+                <RecordAudio onSubmit={handleAudioSubmit} />
             )}
 
             {/* Audio List Section */}
