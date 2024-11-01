@@ -18,23 +18,23 @@ function AudioContentHeader({ playing, handlePlayPause, audio }) {
 
     return (
         <div className="flex items-center">
-            <div className="grow flex">
+            <div className="grow flex items-center">
                 <img
                     src={playing ? PauseButton : PlayButton}
-                    className="w-16 h-16 cursor-pointer"
+                    className="w-10 h-10 cursor-pointer"
                     onClick={handlePlayPause} 
                     alt="play/pause button"
                 />
-                <div className="flex flex-col ml-10">
-                    <p className="text-2xl font-medium mb-1">{audio.file_name}</p>
-                    <p className="text-lg text-quaternary font-medium">{formatDate(audio.created_at)}</p>
+                <div className="flex flex-col ml-5">
+                    <p className="text-xl font-medium">{audio.file_name}</p>
+                    <p className="text-base text-quaternary font-medium">{formatDate(audio.created_at)}</p>
                 </div>
             </div>
             <div className="flex-none">
                 <a 
                     href={`http://127.0.0.1:8000/s3/audio/download/${audio.s3_key}`}
                     download 
-                    className="bg-transparent hover:bg-primary font-semibold text-primary hover:text-white px-5 py-3 text-xl rounded-lg flex gap-2 border-primary border-2 items-center"
+                    className="bg-transparent hover:bg-primary font-semibold text-primary hover:text-white px-3 py-2 text-base rounded-lg flex gap-2 border-primary border-2 items-center"
                 >
                     DOWNLOAD AUDIO
                     <svg 

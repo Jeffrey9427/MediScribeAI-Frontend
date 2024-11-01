@@ -60,6 +60,7 @@ function RecordAudio({onSubmit}) {
             if (event.data.size > 0) {
                 localAudioChunks.push(event.data); // Push to local array
             }
+            console.log("Recording pushed.");
         };
 
         newRecorder.onstop = () => {
@@ -67,6 +68,7 @@ function RecordAudio({onSubmit}) {
                 const audioBlob = new Blob(localAudioChunks, { type: "audio/webm" });
                 const audioFile = new File([audioBlob], "recording.webm", { type: "audio/webm" });
                 onSubmit(audioFile); // pass the recorded file to the parent
+                console.log("Recording submitted.");
             } else {
                 console.error("No audio data recorded.");
             }
@@ -74,11 +76,13 @@ function RecordAudio({onSubmit}) {
             setAudioChunks([]); // clear the chunks for future recordings
             setElapsedTime(0);
             stream.getTracks().forEach(track => track.stop());
+            console.log("Recording stopped.");
         };
 
         setRecorder(newRecorder);
         newRecorder.start();
         setIsRecording(true);
+        console.log("Recording.");
     };
 
     const stopRecording = async () => {

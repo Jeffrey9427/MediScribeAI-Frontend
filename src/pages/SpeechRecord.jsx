@@ -1,12 +1,10 @@
 import Header from "../components/Header";
 import SearchAudio from "../components/SearchAudio";
-// import audioData from '../data';
 import React, { useState, useEffect } from 'react';
 import CancelButton from "../components/CancelButton";
 import { useNavigate } from "react-router-dom";
 import RecordAudio from "../components/RecordAudio";
 import AudioList from "../components/AudioList";
-import AudioPlayer from "../components/AudioPlayer";
 
 function SpeechRecord() {
     const [audioData, setAudioData] = useState([]);
@@ -28,14 +26,10 @@ function SpeechRecord() {
         };
 
         fetchAudioData();
-    }, []);
+    }, [audioData]);
 
     const subtitle = "Start and create a new recording";
     const [searchTerm, setSearchTerm] = useState('');
-    const [audioFile, setAudioFile] = useState(null);
-    const [uploadedAudio, setUploadedAudio] = useState(null);  // track uploaded/recorded audio file
-    const [uploadedAudioName, setUploadedAudioName] = useState('');
-    const [audioRecord, setAudioRecord] = useState(null);
     const totalRecordings = audioData.length;
     const nav = useNavigate();
 
@@ -43,18 +37,22 @@ function SpeechRecord() {
         nav("/record-storage");
     };
 
-    const handleAudioSubmit = async (file) => {
-        const audioUrl = URL.createObjectURL(file);
-        setUploadedAudio(audioUrl);
-        setAudioFile(file);
-    }
+    const getCurrentDateTimeString = () => {
+        const now = new Date();
+        const day = String(now.getDate()).padStart(2, '0');
+        const month = String(now.getMonth() + 1).padStart(2, '0'); // Months are 0-indexed
+        const year = now.getFullYear();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
 
-    const handleAudioUpload = async (s3_key, title) => {
-        let uploadFile = audioFile;
-        if(title) uploadFile = new File([audioFile], title + '.' + audioFile.name.split(".").pop(), {"type": audioFile.type});
-        
+        return `AUDIO_${day}${month}${year}_${hours}${minutes}`;
+    };
+
+    const handleAudioSubmit = async (file) => {
+        const title = getCurrentDateTimeString();
+        const uploadFile = new File([file], title + '.' + file.name.split(".").pop(), {"type": file.type})
+
         console.log("Uploaded file: ", uploadFile);  // file object logged here
-        setUploadedAudioName(uploadFile.name);  
         console.log(uploadFile.name);
 
         const formData = new FormData();
@@ -81,83 +79,10 @@ function SpeechRecord() {
         }
     }
 
-    const handleAudioRecordTitleSubmit = async (newTitle) => {
-        console.log(newTitle)
-
-        handleAudioUpload(newTitle);
-    }
-
     const handleAudioClick = (audio) => {
         // set the clicked audio as active
         nav("/record-storage", { state: { activeAudio: audio } });
     }
-
-    const handleAudioDelete = async (s3_key) => {
-        setUploadedAudio(null);
-        try {
-            const response = await fetch(`http://127.0.0.1:8000/s3/audio/delete/${s3_key}`, {
-                method: "DELETE",
-            });
-            if (response.ok) {
-                console.log("File deleted successfully!");
-                setAudioRecord(null);
-            }
-            else console.error("Failed to delete file!")
-        } catch (e) {
-            console.error(error)
-        }
-        
-    }
-
-    const handleTitleSave = async (s3_key, newTitle) => {
-        console.log("Saved Title: ", newTitle);
-        // continue with saving title to backend, S3, or database
-
-        console.log("Uploaded Audio Name: ", uploadedAudioName);
-        console.log("Recorded Audio: ", audioRecord);
-
-        try {
-            const response = await fetch(`http://127.0.0.1:8000/s3/audio/edit/${s3_key}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({  
-                    new_filename: newTitle
-                })
-            });
-    
-            if (response.ok) {
-                console.log("Title updated successfully!");
-                const updatedData = await response.json();  // Parse the response to get updated details
-                const new_key = updatedData.s3_key;
-
-                try {
-                    console.log("transcribing: " + new_key);
-                    const response = await fetch(`http://127.0.0.1:8000/transcribe/start_job/${new_key}`, {
-                        method: "POST",
-                    });
-                    
-                    if (response.ok) {
-                        const transcription = await response.json();
-                        console.log("Transcription started successfully!", transcription);
-                    } else {
-                        console.error("Failed to transcribe");
-                    }
-                } catch (error) {
-                    console.error("Error transcribing:", error);
-                }
-                nav("/record-storage");
-                setAudioRecord(null);
-                
-            } else {
-                console.error("Failed to update title!");
-            }
-        } catch (error) {
-            console.error("Error while updating title:", error);
-        }
-    }
-
     const filteredAudioData = audioData.filter(audio => 
         audio.file_name.toLowerCase().includes(searchTerm.toLowerCase()) // match title with search term
     );
@@ -171,23 +96,12 @@ function SpeechRecord() {
             </div>
             <Header subtitle={subtitle} totalRecordings={totalRecordings} />
 
-            {/* Record / Upload Audio Section */}
-            {uploadedAudio && audioRecord ? (
-                <AudioPlayer 
-                    audioFile={uploadedAudio} 
-                    onDelete={handleAudioDelete} 
-                    onSave={handleAudioRecordTitleSubmit} 
-                    s3_key={audioRecord?.s3_key}
-                />
-            ) : (
-                <RecordAudio onSubmit={handleAudioSubmit} />
-            )}
+            <RecordAudio onSubmit={handleAudioSubmit} />    
 
             {/* Audio List Section */}
             <AudioList 
                 audioData={filteredAudioData} 
                 handleAudioClick={handleAudioClick}
-                handleEdit={handleTitleSave}
             />
         </div>
     )

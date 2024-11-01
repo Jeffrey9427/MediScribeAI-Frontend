@@ -37,31 +37,31 @@ function AudioItem({ audio, active, onClick, onEdit, onDelete }) {
 
     return (
         <div 
-            className={`pl-7 pr-10 py-4 flex items-center lexend rounded-3xl cursor-pointer ${active ? 'bg-primary text-white' : ''} group`}
+            className={`pl-5 pr-10 py-4 flex items-center lexend rounded-3xl cursor-pointer ${active ? 'bg-primary text-white' : ''} group`}
             onClick={onClick}
         >
-            <div className="flex space-x-8 grow">
+            <div className="flex space-x-4 grow">
                 <img
                     src={PlayButton}
                     alt="playButton"
-                    className={`w-8 ${active ? 'filter brightness-0 invert' : ''}`}
+                    className={`w-6 ${active ? 'filter brightness-0 invert' : ''}`}
                 />
                 {isEditing ? (
                     <textarea
                         value={newTitle}
                         onKeyDown={handleKeyDown}
                         onChange={(e) => setNewTitle(e.target.value)}
-                        className="text-[1.375rem] font-medium text-black"
+                        className="text-lg font-medium text-black"
                     />
                 ) : (
-                    <p className={`text-[1.375rem] font-${active ? 'medium' : 'bold'}`}>{audio.file_name}</p>
+                    <p className={`text-lg font-${active ? 'medium' : 'bold'}`}>{audio.file_name}</p>
                 )}
             </div>
-            <div className="flex-none mr-5">
-                <p className={`text-lg ${active ? 'text-white' : 'text-quaternary'}`}>{formatDate(audio.created_at)}</p>
+            <div className="flex-none">
+                <p className={`text-base ${active ? 'text-white' : 'text-quaternary'}`}>{formatDate(audio.created_at)}</p>
             </div>
             <div className="flex items-center flex-none relative">
-                <p className={`text-lg ${active ? 'text-white' : 'text-quaternary'} transition-all duration-100`}>{audio.duration}</p>
+                <p className={`text-base ${active ? 'text-white' : 'text-quaternary'} transition-all duration-100`}>{audio.duration}</p>
             </div>
 
             {/* show delete and edit icons when hovering through the active audio */}

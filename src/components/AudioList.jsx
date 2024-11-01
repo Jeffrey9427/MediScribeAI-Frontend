@@ -4,7 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 
 function AudioList({ audioData, handleAudioClick, activeAudio, playing, handlePlayPause, handleDelete, handleEdit }) {
     return (
-        <div className="mt-6 space-y-4">
+        <div className="mt-6 space-y-0.5">
             {audioData.map((audio) => (
                 <div key={audio.s3_key}>
                     <AudioItem
