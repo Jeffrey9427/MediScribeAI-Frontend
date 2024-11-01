@@ -67,10 +67,26 @@ function SpeechRecord() {
             });
             if (response.ok) {
                 const audioData = await response.json();   
-                setAudioRecord(audioData);  
+                // setAudioRecord(audioData);  
                 console.log("File uploaded successfully!", audioData)
              
-
+                const new_key = audioData.s3_key;
+                try {
+                    console.log("transcribing: " + new_key);
+                    const response = await fetch(`http://127.0.0.1:8000/transcribe/start_job/${new_key}`, {
+                        method: "POST",
+                    });
+                    
+                    if (response.ok) {
+                        const transcription = await response.json();
+                        console.log("Transcription started successfully!", transcription);
+                    } else {
+                        console.error("Failed to transcribe");
+                    }
+                } catch (error) {
+                    console.error("Error transcribing:", error);
+                }
+                nav("/record-storage");
             } else {
                 console.error("Failed to upload file!");
             }

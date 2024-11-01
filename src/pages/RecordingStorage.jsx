@@ -64,6 +64,7 @@ function RecordingStorage() {
     };
 
     const handleAudioClick = async (audio) => {
+        console.log("Audio clicked: ", audio);
         if (activeAudio?.s3_key === audio.s3_key) {
             setActiveAudio(null); // if clicked again, hide the content
         } else {
@@ -81,7 +82,8 @@ function RecordingStorage() {
               
                 if (response.ok) {
                     const transcription = await response.json()
-                    setTranscriptionData(transcription);
+                    setTranscriptionData(transcription.content);
+                    console.log("Fetched transcription: ", transcription);
                 } else {
                     console.error("Failed to fetch transcription");
                 }
