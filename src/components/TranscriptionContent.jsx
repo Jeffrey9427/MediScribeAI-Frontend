@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { GoChevronDown } from "react-icons/go";
 import { FaRegEdit } from "react-icons/fa";
 
-function TranscriptionContent({ transcriptionData, setTranscriptionData }) {
+function TranscriptionContent({  transcriptionData, setTranscriptionData }) {
     const [editIndex, setEditIndex] = useState(null); 
     const [editedText, setEditedText] = useState('');  
 
@@ -11,17 +11,66 @@ function TranscriptionContent({ transcriptionData, setTranscriptionData }) {
         setEditedText(currentText); 
     };
 
-    const handleSaveClick = (index) => {
-        const updatedTranscriptions = transcriptionData.map((item, i) => {
+    const handleSaveClick = async (index) => {
+        const updatedTranscriptions = transcriptionData.content.map((item, i) => {
             if (i === index) {
                 return { ...item, transcript: editedText };
             }
             return item;
         });
 
-        setTranscriptionData(updatedTranscriptions); // Update transcription data state
-        setEditIndex(null); // Reset edit index
-    };
+        // // Create a new data structure to match format
+        // const updatedData = {
+        //     s3_name: transcriptionData.s3_name,
+        //     content: updatedTranscriptions,
+        // };
+
+        // Make sure to send the updated audio segments only
+        // const audioSegments = updatedTranscriptions.map(entry => ({
+        //     id: entry.id,
+        //     transcript: entry.transcript,
+        //     start_time: entry.start_time,
+        //     end_time: entry.end_time,
+        //     speaker_label: entry.speaker_label,
+        //     items: entry.items,
+        // }));
+
+
+        
+        try {
+            console.log("Updating transcription for:", transcriptionData.s3_name);
+            const response = await fetch(`http://127.0.0.1:8000/transcribe/update_transcription/${transcriptionData.s3_name}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({updatedTranscriptions }), // Make sure this matches your backend expectations
+            });
+            console.log(JSON.stringify({ updatedTranscriptions}))
+            if (!response.ok) {
+                throw new Error('Failed to update segment');
+            }
+
+            setTranscriptionData((prevData) => ({
+                ...prevData,
+                content: updatedTranscriptions, // Set the updated content
+            }));
+    
+            alert("Segment updated successfully!");
+            setEditIndex(null); // Reset edit index after saving
+        } catch (error) {
+            console.error("Error updating segment:", error);
+            alert("Failed to update segment.");
+        }
+
+
+    }
+
+        
+    
+
+
+        
 
     const mapSpeakerLabel = (speakerLabel) => {
         if (speakerLabel === "spk_0") return "Speaker 1";
@@ -53,7 +102,7 @@ function TranscriptionContent({ transcriptionData, setTranscriptionData }) {
             <div className="py-2 bg-white"></div>
 
             <div className="overflow-y-auto max-h-[100vh]">
-                {transcriptionData.map((entry, index) => (
+                { transcriptionData?.content?.map((entry, index) => (
             
                     <div
                         key={index}

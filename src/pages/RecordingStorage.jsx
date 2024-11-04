@@ -10,7 +10,17 @@ import { Loader2 } from "lucide-react";
 function RecordingStorage() {
     const location = useLocation();
     const [audioData, setAudioData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false); // Track loading status
+    const [isLoading, setIsLoading] = useState(false); 
+    const totalRecordings = audioData.length; 
+    const [playing, setPlaying] = useState(false);
+    const [activeAudio, setActiveAudio] = useState(audioData[0]); // state to track active audio
+    const [searchTerm, setSearchTerm] = useState('');
+    const subtitle = "Collection of your audio recordings";
+    const nav = useNavigate();
+    const [transcriptionData, setTranscriptionData] = useState(activeAudio?.transcription || []);
+
+
+
     
 
     useEffect(() => {
@@ -32,13 +42,7 @@ function RecordingStorage() {
         fetchAudioData();
     }, []);
 
-    const totalRecordings = audioData.length; 
-    const [playing, setPlaying] = useState(false);
-    const [activeAudio, setActiveAudio] = useState(audioData[0]); // state to track active audio
-    const [searchTerm, setSearchTerm] = useState('');
-    const subtitle = "Collection of your audio recordings";
-    const nav = useNavigate();
-    const [transcriptionData, setTranscriptionData] = useState(activeAudio?.transcription || []);
+    
 
     const handleButtonClick = () => {
         nav("/speech-record");
