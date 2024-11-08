@@ -26,7 +26,7 @@ function SpeechRecord() {
         };
 
         fetchAudioData();
-    }, [audioData]);
+    }, []);
 
     const subtitle = "Start and create a new recording";
     const [searchTerm, setSearchTerm] = useState('');
