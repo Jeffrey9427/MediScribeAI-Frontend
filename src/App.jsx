@@ -8,7 +8,7 @@ function App() {
       <Router>
         <Routes>
           <Route path="/record-storage" element={<RecordingStorage />} />
-          <Route path="/speech-record" element={<SpeechRecord />} />
+          <Route path="/" element={<SpeechRecord />} />
           </Routes>
       </Router>
     </>

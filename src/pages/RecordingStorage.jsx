@@ -45,7 +45,7 @@ function RecordingStorage() {
     
 
     const handleButtonClick = () => {
-        nav("/speech-record");
+        nav("/");
     };
 
     useEffect(() => {
