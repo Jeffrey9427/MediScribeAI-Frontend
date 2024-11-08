@@ -86,8 +86,8 @@ function RecordingStorage() {
               
                 if (response.ok) {
                     const transcription = await response.json()
-                    setTranscriptionData(transcription.content);
-                    console.log("Fetched transcription: ", transcription);
+                    setTranscriptionData(transcription);
+                    console.log("Fetched transcription: ", transcription.content);
                 } else {
                     console.error("Failed to fetch transcription");
                 }
