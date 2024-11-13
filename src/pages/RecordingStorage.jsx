@@ -10,7 +10,8 @@ import { Loader2 } from "lucide-react";
 function RecordingStorage() {
     const location = useLocation();
     const [audioData, setAudioData] = useState([]);
-    const [isLoading, setIsLoading] = useState(false); 
+    const [isTranscriptionLoading, setIsTranscriptionLoading] = useState(false); 
+    const [isAudioStorageLoading, setIsAudioStorageLoading] = useState(false); 
     const totalRecordings = audioData.length; 
     const [playing, setPlaying] = useState(false);
     const [activeAudio, setActiveAudio] = useState(audioData[0]); // state to track active audio
@@ -25,6 +26,8 @@ function RecordingStorage() {
 
     useEffect(() => {
         const fetchAudioData = async () => {
+            setIsAudioStorageLoading(true);
+
             try {
                 const response = await fetch('https://mediscribeai-backend.vercel.app/s3/audio/get_all_file_detail');
                 if (response.ok) {
@@ -36,6 +39,8 @@ function RecordingStorage() {
                 }
             } catch (error) {
                 console.error("Error fetching audio data:", error);
+            } finally {
+                setIsAudioStorageLoading(false);
             }
         };
 
@@ -75,7 +80,7 @@ function RecordingStorage() {
             setActiveAudio(audio);
             setPlaying(false); // stop playing when switching audio
 
-            setIsLoading(true); // Set loading to true while fetching
+            setIsTranscriptionLoading(true); // Set loading to true while fetching
 
              // Fetch the transcription data for the selected audio
             try {
@@ -94,7 +99,7 @@ function RecordingStorage() {
             } catch (error) {
                 console.error("Error fetching transcription:", error);
             } finally {
-                setIsLoading(false); // Set loading to false when done
+                setIsTranscriptionLoading(false); // Set loading to false when done
             }
             
         }
@@ -174,30 +179,45 @@ function RecordingStorage() {
             <div className="flex gap-20">
                 <div className="flex-1">
                     {/* Audio List Section */}
-                    <AudioList 
-                        audioData={filteredAudioData} 
-                        handleAudioClick={handleAudioClick} 
-                        activeAudio={activeAudio} 
-                        playing={playing}
-                        handlePlayPause={handlePlayPause}
-                        handleDelete={handleDelete}
-                        handleEdit={handleEdit}
-                    />
+                    {isAudioStorageLoading ? (
+                     
+                        <div className="flex flex-col items-center justify-center h-full w-full rounded-lg p-12 bg-white shadow-lg">
+                            <Loader2 className="h-24 w-24 animate-spin text-primary" />
+                            <p className="mt-8 text-2xl font-semibold text-gray-700">Loading audio collection...</p>
+                            <div className="mt-10 flex space-x-4">
+                                <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+                                <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+                                <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
+                            </div>
+                            <p className="mt-6 text-lg text-gray-500">This may take a few moment</p>
+                        </div>
+                    
+                    ) : (
+                        <AudioList 
+                            audioData={filteredAudioData} 
+                            handleAudioClick={handleAudioClick} 
+                            activeAudio={activeAudio} 
+                            playing={playing}
+                            handlePlayPause={handlePlayPause}
+                            handleDelete={handleDelete}
+                            handleEdit={handleEdit}
+                        />
+                    )}
                 </div>
                 <div className="flex-1">
                     {/* section displaying the transcription for the active audio */}
-                    {isLoading ? (
+                    {isTranscriptionLoading ? (
                      
-                     <div className="flex flex-col items-center justify-center h-full w-full bg-white rounded-lg shadow-lg p-12">
-                     <Loader2 className="h-24 w-24 animate-spin text-primary" />
-                     <p className="mt-8 text-2xl font-semibold text-gray-700">Loading transcription...</p>
-                     <div className="mt-10 flex space-x-4">
-                       <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
-                       <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
-                       <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
-                     </div>
-                     <p className="mt-6 text-lg text-gray-500">This may take a few moment</p>
-                   </div>
+                        <div className="flex flex-col items-center justify-center h-full w-full bg-white rounded-lg shadow-lg p-12">
+                            <Loader2 className="h-24 w-24 animate-spin text-primary" />
+                            <p className="mt-8 text-2xl font-semibold text-gray-700">Loading transcription...</p>
+                            <div className="mt-10 flex space-x-4">
+                                <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+                                <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+                                <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
+                            </div>
+                            <p className="mt-6 text-lg text-gray-500">This may take a few moment</p>
+                        </div>
                     
                     ) : (
                         <TranscriptionContent transcriptionData={transcriptionData} setTranscriptionData={setTranscriptionData} />
