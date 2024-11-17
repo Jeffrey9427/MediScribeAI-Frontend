@@ -12,7 +12,7 @@ function SpeechRecord() {
     useEffect(() => {
         const fetchAudioData = async () => {
             try {
-                const response = await fetch('https://54.179.196.155:8000/s3/audio/get_all_file_detail');
+                const response = await fetch('http://52.220.39.154:8000/s3/audio/get_all_file_detail');
                 if (response.ok) {
                     const data = await response.json();
                     setAudioData(data);
@@ -61,7 +61,7 @@ function SpeechRecord() {
         formData.append("patient_name", "John Doe");
 
         try {
-            const response = await fetch(`https://54.179.196.155:8000/s3/audio/upload`, {
+            const response = await fetch(`http://52.220.39.154:8000/s3/audio/upload`, {
                 method: "POST",
                 body: formData
             });
@@ -73,7 +73,7 @@ function SpeechRecord() {
                 const new_key = audioData.s3_key;
                 try {
                     console.log("transcribing: " + new_key);
-                    const response = await fetch(`https://54.179.196.155:8000/transcribe/start_job/${new_key}`, {
+                    const response = await fetch(`http://52.220.39.154:8000/transcribe/start_job/${new_key}`, {
                         method: "POST",
                     });
                     
