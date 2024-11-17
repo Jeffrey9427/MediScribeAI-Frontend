@@ -32,7 +32,7 @@ function AudioContentHeader({ playing, handlePlayPause, audio }) {
             </div>
             <div className="flex-none">
                 <a 
-                    href={`https://mediscribeai-backend.vercel.app/s3/audio/download/${audio.s3_key}`}
+                    href={`https://54.179.196.155:8000/s3/audio/download/${audio.s3_key}`}
                     download 
                     className="bg-transparent hover:bg-primary font-semibold text-primary hover:text-white px-3 py-2 text-base rounded-lg flex gap-2 border-primary border-2 items-center"
                 >
