@@ -29,7 +29,7 @@ function RecordingStorage() {
             setIsAudioStorageLoading(true);
 
             try {
-                const response = await fetch('http://52.220.39.154:8000/s3/audio/get_all_file_detail');
+                const response = await fetch('https://mediscribeai-backend.vercel.app/s3/audio/get_all_file_detail');
                 if (response.ok) {
                     const data = await response.json();
                     setAudioData(data);
@@ -86,7 +86,7 @@ function RecordingStorage() {
             try {
                 
                 console.log(audio.s3_key)
-                const response = await fetch(`http://52.220.39.154:8000/transcribe/get_transcription/${audio.s3_key}`, {
+                const response = await fetch(`https://mediscribeai-backend.vercel.app/transcribe/get_transcription/${audio.s3_key}`, {
                     method: "GET",})
               
                 if (response.ok) {
@@ -111,7 +111,7 @@ function RecordingStorage() {
 
     const handleDelete = async (s3_key) => {
         try {
-            const response = await fetch(`http://52.220.39.154:8000/s3/audio/delete/${s3_key}`, {
+            const response = await fetch(`https://mediscribeai-backend.vercel.app/s3/audio/delete/${s3_key}`, {
                 method: "DELETE",
             });
             if (response.ok) {
@@ -134,7 +134,7 @@ function RecordingStorage() {
             const parts = s3_key.split('_', 2);
             const newS3Key = `${parts[0]}_${parts[1]}_${newTitle}`;
 
-            const response = await fetch(`http://52.220.39.154:8000/s3/audio/edit/${s3_key}`, {
+            const response = await fetch(`https://mediscribeai-backend.vercel.app/s3/audio/edit/${s3_key}`, {
                 method: "PUT",
                 headers: {
                     "Content-Type": "application/json",

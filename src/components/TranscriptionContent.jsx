@@ -39,7 +39,7 @@ function TranscriptionContent({  transcriptionData, setTranscriptionData }) {
         
         try {
             console.log("Updating transcription for:", transcriptionData.s3_name);
-            const response = await fetch(`http://52.220.39.154:8000/transcribe/update_transcription/${transcriptionData.s3_name}`, {
+            const response = await fetch(`https://mediscribeai-backend.vercel.app/transcribe/update_transcription/${transcriptionData.s3_name}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
