@@ -1,8 +1,5 @@
-
-
 import React, { useState, useEffect } from 'react'
 import { Loader2, AlertCircle } from 'lucide-react'
-import { Card, CardContent } from "@/components/ui/card"
 import Header from "../components/Header"
 import SearchAudio from "../components/SearchAudio"
 import AudioList from "../components/AudioList"
@@ -157,10 +154,13 @@ function RecordingStorage() {
   )
 
   const CustomAlert = ({ message, type }) => (
-    <div className={`p-4 mb-4 rounded-md ${type === 'error' ? 'bg-red-50 text-red-800' : 'bg-yellow-50 text-yellow-800'}`} role="alert">
-      <div className="flex items-center">
-        <AlertCircle className="h-5 w-5 mr-2" aria-hidden="true" />
-        <span>{message}</span>
+    <div className="flex items-center justify-center h-full">
+      <div className={`p-8 rounded-lg ${type === 'error' ? 'bg-red-50 text-red-800' : 'bg-yellow-50 text-yellow-800'} max-w-md w-full`} role="alert">
+        <div className="flex items-center mb-4">
+          <AlertCircle className="h-8 w-8 mr-4" aria-hidden="true" />
+          <span className="text-2xl font-semibold">{type === 'error' ? 'Error' : 'Processing'}</span>
+        </div>
+        <p className="text-lg">{message}</p>
       </div>
     </div>
   )
@@ -174,72 +174,71 @@ function RecordingStorage() {
       <Header subtitle={subtitle} totalRecordings={totalRecordings} />
 
       <div className="flex gap-20">
-        <Card className="flex-1">
-          <CardContent>
-            {isAudioStorageLoading ? (
-              <div className="flex flex-col items-center justify-center h-full w-full rounded-lg p-12 bg-white shadow-lg">
-                <Loader2 className="h-24 w-24 animate-spin text-primary" />
-                <p className="mt-8 text-2xl font-semibold text-gray-700">Loading audio collection...</p>
-                <div className="mt-10 flex space-x-4">
-                  <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
-                  <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
-                </div>
-                <p className="mt-6 text-lg text-gray-500">This may take a few moments</p>
+        <div className="flex-1 bg-white rounded-lg shadow-lg p-6">
+          {isAudioStorageLoading ? (
+            <div className="flex flex-col items-center justify-center h-full w-full rounded-lg p-12 bg-white">
+              <Loader2 className="h-24 w-24 animate-spin text-primary" />
+              <p className="mt-8 text-2xl font-semibold text-gray-700">Loading audio collection...</p>
+              <div className="mt-10 flex space-x-4">
+                <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+                <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+                <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
               </div>
-            ) : (
-              <AudioList 
-                audioData={filteredAudioData} 
-                handleAudioClick={handleAudioClick} 
-                activeAudio={activeAudio} 
-                playing={playing}
-                handlePlayPause={handlePlayPause}
-                handleDelete={handleDelete}
-                handleEdit={handleEdit}
-              />
-            )}
-          </CardContent>
-        </Card>
-        <Card className="flex-1">
-          <CardContent>
-            {isTranscriptionLoading ? (
-              <div className="flex flex-col items-center justify-center h-full w-full bg-white rounded-lg shadow-lg p-12">
-                <Loader2 className="h-24 w-24 animate-spin text-primary" />
-                <p className="mt-8 text-2xl font-semibold text-gray-700">Loading transcription...</p>
-                <div className="mt-10 flex space-x-4">
-                  <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
-                  <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
-                  <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
-                </div>
-                <p className="mt-6 text-lg text-gray-500">This may take a few moments</p>
+              <p className="mt-6 text-lg text-gray-500">This may take a few moments</p>
+            </div>
+          ) : (
+            <AudioList 
+              audioData={filteredAudioData} 
+              handleAudioClick={handleAudioClick} 
+              activeAudio={activeAudio} 
+              playing={playing}
+              handlePlayPause={handlePlayPause}
+              handleDelete={handleDelete}
+              handleEdit={handleEdit}
+            />
+          )}
+        </div>
+        <div className="flex-1 bg-white rounded-lg shadow-lg p-6 h-[calc(100vh-12rem)]">
+          {isTranscriptionLoading ? (
+            <div className="flex flex-col items-center justify-center h-full w-full bg-white rounded-lg p-12">
+              <Loader2 className="h-24 w-24 animate-spin text-primary" />
+              <p className="mt-8 text-2xl font-semibold text-gray-700">Loading transcription...</p>
+              <div className="mt-10 flex space-x-4">
+                <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "0ms" }} />
+                <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "150ms" }} />
+                <div className="h-4 w-4 rounded-full bg-primary animate-bounce" style={{ animationDelay: "300ms" }} />
               </div>
-            ) : (
-              <>
-                {transcriptionStatus === "IN_PROGRESS" && (
-                  <CustomAlert 
-                    message="Your transcription is still being processed. Please try again later." 
-                    type="warning"
-                  />
-                )}
-                {transcriptionStatus === "ERROR" && (
-                  <CustomAlert 
-                    message="An error occurred while fetching the transcription. Please try again." 
-                    type="error"
-                  />
-                )}
-                {transcriptionStatus === "COMPLETED" && (
-                  <TranscriptionContent 
-                    transcriptionData={transcriptionData} 
-                    setTranscriptionData={setTranscriptionData} 
-                  />
-                )}
-              </>
-            )}
-          </CardContent>
-        </Card>
+              <p className="mt-6 text-lg text-gray-500">This may take a few moments</p>
+            </div>
+          ) : (
+            <>
+              {transcriptionStatus === "IN_PROGRESS" && (
+                <CustomAlert 
+                  message="Your transcription is still being processed. Please try again later." 
+                  type="warning"
+                />
+              )}
+              {transcriptionStatus === "ERROR" && (
+                <CustomAlert 
+                  message="An error occurred while fetching the transcription. Please try again." 
+                  type="error"
+                />
+              )}
+              {transcriptionStatus === "COMPLETED" && (
+                <TranscriptionContent 
+                  transcriptionData={transcriptionData} 
+                  setTranscriptionData={setTranscriptionData} 
+                />
+              )}
+            </>
+          )}
+        </div>
       </div>
     </div>
   )
+
+
 }
 
 export default RecordingStorage
+
