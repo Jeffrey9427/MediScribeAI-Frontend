@@ -82,9 +82,11 @@ function RecordingStorage() {
         if (data.status === "IN_PROGRESS") {
           setTranscriptionStatus("IN_PROGRESS")
           setTranscriptionData([])
+          console.log("Still fetching")
         } else {
           setTranscriptionStatus("COMPLETED")
           setTranscriptionData(data.content || [])
+          console.log("Fetched transcription data: ", data)
         }
       } catch (error) {
         console.error("Error fetching transcription:", error)
