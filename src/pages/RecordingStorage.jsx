@@ -174,7 +174,7 @@ function RecordingStorage() {
       <Header subtitle={subtitle} totalRecordings={totalRecordings} />
 
       <div className="flex gap-20">
-        <div className="flex-1 bg-white rounded-lg shadow-lg p-6">
+        <div className="flex-1  rounded-lg p-6">
           {isAudioStorageLoading ? (
             <div className="flex flex-col items-center justify-center h-full w-full rounded-lg p-12 bg-white">
               <Loader2 className="h-24 w-24 animate-spin text-primary" />
@@ -198,9 +198,9 @@ function RecordingStorage() {
             />
           )}
         </div>
-        <div className="flex-1 bg-white rounded-lg shadow-lg p-6 h-[calc(100vh-12rem)]">
+        <div className="flex-1 rounded-lg p-6 h-[calc(100vh-12rem)]">
           {isTranscriptionLoading ? (
-            <div className="flex flex-col items-center justify-center h-full w-full bg-white rounded-lg p-12">
+            <div className="flex flex-col items-center justify-center h-full w-full bg-white rounded-lg p-12 shadow-lg ">
               <Loader2 className="h-24 w-24 animate-spin text-primary" />
               <p className="mt-8 text-2xl font-semibold text-gray-700">Loading transcription...</p>
               <div className="mt-10 flex space-x-4">
