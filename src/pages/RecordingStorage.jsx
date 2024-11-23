@@ -85,7 +85,7 @@ function RecordingStorage() {
           console.log("Still fetching")
         } else {
           setTranscriptionStatus("COMPLETED")
-          setTranscriptionData(data.content || [])
+          setTranscriptionData(data || [])
           console.log("Fetched transcription data: ", data)
         }
       } catch (error) {
