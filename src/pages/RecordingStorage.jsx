@@ -154,7 +154,7 @@ function RecordingStorage() {
   )
 
   const CustomAlert = ({ message, type }) => (
-    <div className="flex items-center justify-center h-full">
+    <div className="flex items-center justify-center h-full bg-white shadow-lg">
       <div className={`p-8 rounded-lg ${type === 'error' ? 'bg-red-50 text-red-800' : 'bg-yellow-50 text-yellow-800'} max-w-md w-full`} role="alert">
         <div className="flex items-center mb-4">
           <AlertCircle className="h-8 w-8 mr-4" aria-hidden="true" />
